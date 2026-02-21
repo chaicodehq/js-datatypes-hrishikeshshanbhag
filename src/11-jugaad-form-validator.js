@@ -62,5 +62,9 @@
  *   // => { isValid: false, errors: { name: "...", email: "...", ... } }
  */
 export function validateForm(formData) {
-  // Your code here
+  let errorObj = {};
+  let keys = Object.keys(formData);
+  keys.forEach(key => {
+    
+  })
 }

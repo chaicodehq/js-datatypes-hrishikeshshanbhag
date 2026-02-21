@@ -42,5 +42,41 @@
  *   // => "INVALID PASS"
  */
 export function generateLocalPass(passenger) {
-  // Your code here
+  if (!passenger || typeof passenger !== "object") return "INVALID PASS";
+  if (
+    !passenger.name ||
+    typeof passenger.name !== "string" ||
+    passenger.name.length <= 0 ||
+    !passenger.to ||
+    typeof passenger.to !== "string" ||
+    passenger.to.length <= 0 ||
+    !passenger.from ||
+    typeof passenger.from !== "string" ||
+    passenger.from.length <= 0 ||
+    typeof passenger.classType !== "string" ||
+    !passenger.classType ||
+    (passenger.classType.toLowerCase() !== "first" &&
+      passenger.classType.toLowerCase() !== "second")
+  )
+    return "INVALID PASS";
+
+  let passId =
+    passenger.classType.charAt(0).toUpperCase() +
+    passenger.from.slice(0, 3).toUpperCase() +
+    passenger.to.slice(0, 3).toUpperCase();
+
+  return `MUMBAI LOCAL PASS
+---
+Name: ${passenger.name.toUpperCase()}
+From: ${passenger.from.charAt(0).toUpperCase() + passenger.from.slice(1).toLowerCase()}
+To: ${passenger.to.charAt(0).toUpperCase() + passenger.to.slice(1).toLowerCase()}
+Class: ${passenger.classType.toUpperCase()}
+Pass ID: ${passId}`;
+  //     Line 1: "MUMBAI LOCAL PASS"
+  //  *     Line 2: "---"
+  //  *     Line 3: "Name: <NAME IN UPPERCASE>"
+  //  *     Line 4: "From: <From in Title Case>"
+  //  *     Line 5: "To: <To in Title Case>"
+  //  *     Line 6: "Class: <FIRST or SECOND>"
+  //  *     Line 7: "Pass ID: <PASSID>"
 }

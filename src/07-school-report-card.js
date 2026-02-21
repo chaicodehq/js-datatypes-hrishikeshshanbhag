@@ -41,5 +41,75 @@
  *   // => { name: "Priya", totalMarks: 63, percentage: 31.5, grade: "F", ... }
  */
 export function generateReportCard(student) {
-  // Your code here
+  if (!student || typeof student !== "object") return null;
+  if (!student.name || student.name.length <= 0) return null;
+  if (
+    !student.marks ||
+    typeof student.marks != "object" ||
+    Object.keys(student.marks).length == 0
+  )
+    return null;
+
+  let keys = Object.keys(student.marks);
+  let values = Object.values(student.marks);
+  let isNull = false;
+  values.forEach((value) => {
+    if (typeof value !== "number" || value < 0 || value > 100) {
+      isNull = true;
+    }
+  });
+  if (isNull) return null;
+  let entries = Object.entries(student.marks);
+  const totalMarks = values.reduce((prev, curr) => prev + curr, 0);
+  const percentage = parseFloat(
+    ((totalMarks / (values.length * 100)) * 100).toFixed(2),
+  );
+  let grade = "F";
+
+  if (percentage >= 90) {
+    grade = "A+";
+  } else if (percentage >= 80) {
+    grade = "A";
+  } else if (percentage >= 70) {
+    grade = "B";
+  } else if (percentage >= 60) {
+    grade = "C";
+  } else if (percentage >= 40) {
+    grade = "D";
+  }
+
+  const maxMarks = Math.max(...values);
+  const minMarks = Math.min(...values);
+  let highestSubject = null;
+  let lowestSubject = null;
+  entries.forEach(([key, value]) => {
+    if (value === maxMarks) {
+      highestSubject = key;
+    }
+    if (value === minMarks) {
+      lowestSubject = key;
+    }
+  });
+  const passedSubjects = entries.map(([key, value]) => {
+    if (value >= 40) {
+      return key;
+    }
+  });
+  const failedSubjects = entries.map(([key, value]) => {
+    if (value < 40) {
+      return key;
+    }
+  });
+  const subjectCount = keys.length;
+  return {
+    name: student.name,
+    totalMarks,
+    percentage,
+    grade,
+    highestSubject,
+    lowestSubject,
+    passedSubjects,
+    failedSubjects,
+    subjectCount,
+  };
 }

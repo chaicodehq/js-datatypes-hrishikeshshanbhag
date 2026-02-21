@@ -47,5 +47,85 @@
  *   //      frequentContact: "Swiggy", allAbove100: false, hasLargeTransaction: true }
  */
 export function analyzeUPITransactions(transactions) {
-  // Your code here
+  if (!Array.isArray(transactions) || transactions.length === 0) return null;
+
+  const filteredTransaction = transactions.filter(
+    (transaction) =>
+      typeof transaction.amount === "number" &&
+      transaction.amount > 0 &&
+      (transaction.type === "credit" || transaction.type === "debit"),
+  );
+
+  if (filteredTransaction.length === 0) return null;
+
+  const totalCredit = filteredTransaction.reduce(
+    (acc, curr) => (curr.type === "credit" ? acc + curr.amount : acc),
+    0,
+  );
+
+  const totalDebit = filteredTransaction.reduce(
+    (acc, curr) => (curr.type === "debit" ? acc + curr.amount : acc),
+    0,
+  );
+
+  const netBalance = totalCredit - totalDebit;
+
+  const transactionCount = filteredTransaction.length;
+
+  const totalValidAmountSum = filteredTransaction.reduce(
+    (acc, curr) => acc + curr.amount,
+    0,
+  );
+  const avgTransaction = Math.round(totalValidAmountSum / transactionCount);
+
+  const highestTransaction = filteredTransaction.reduce((max, curr) =>
+    curr.amount > max.amount ? curr : max,
+  );
+
+  const categoryBreakdown = {};
+  filteredTransaction.forEach((transaction) => {
+    if (!categoryBreakdown[transaction.category]) {
+      categoryBreakdown[transaction.category] = 0;
+    }
+    categoryBreakdown[transaction.category] += transaction.amount;
+  });
+
+  const frequentContactObj = {};
+  filteredTransaction.forEach((transaction) => {
+    if (!frequentContactObj[transaction.to]) {
+      frequentContactObj[transaction.to] = 0;
+    }
+    frequentContactObj[transaction.to]++;
+  });
+
+  let frequentContact = null;
+  let maxCount = 0;
+
+  for (const contact in frequentContactObj) {
+    if (frequentContactObj[contact] > maxCount) {
+      maxCount = frequentContactObj[contact];
+      frequentContact = contact;
+    }
+  }
+
+  const allAbove100 = filteredTransaction.every(
+    (transaction) => transaction.amount > 100,
+  );
+
+  const hasLargeTransaction = filteredTransaction.some(
+    (transaction) => transaction.amount >= 5000,
+  );
+
+  return {
+    totalCredit,
+    totalDebit,
+    netBalance,
+    transactionCount,
+    avgTransaction,
+    highestTransaction,
+    categoryBreakdown,
+    frequentContact,
+    allAbove100,
+    hasLargeTransaction,
+  };
 }
