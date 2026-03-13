@@ -62,9 +62,82 @@
  *   // => { isValid: false, errors: { name: "...", email: "...", ... } }
  */
 export function validateForm(formData) {
-  let errorObj = {};
-  let keys = Object.keys(formData);
-  keys.forEach(key => {
-    
-  })
+  let errors = {};
+  for (let [key, value] of Object.entries(formData)) {
+    if (key === "name") {
+      if (
+        typeof value !== "string" ||
+        value.trim().length < 2 ||
+        value.trim().length > 50
+      ) {
+        errors[key] = "Name must be 2-50 characters";
+      }
+    } else if (key === "email") {
+      if (
+        typeof value !== "string" ||
+        !value.includes("@") ||
+        !value.includes(".") ||
+        value.indexOf("@") !== value.lastIndexOf("@") ||
+        value.indexOf("@") > value.indexOf(".")
+      ) {
+        errors[key] = "Invalid email format";
+      }
+    } else if (key === "phone") {
+      if (
+        typeof value !== "string" ||
+        value.length !== 10 ||
+        !(
+          value.startsWith("6") ||
+          value.startsWith("7") ||
+          value.startsWith("8") ||
+          value.startsWith("9")
+        )
+      ) {
+        errors[key] = "Invalid Indian phone number";
+      } else {
+        let result = value.split("").every((digit) => {
+          digit = parseInt(digit);
+          return digit >= 0 && digit <= 9;
+        });
+        if (result === false) {
+          errors[key] = "Invalid Indian phone number";
+        }
+      }
+    } else if (key === "age") {
+      let parsedAge = Number(value);
+
+      if (
+        isNaN(parsedAge) ||
+        !Number.isInteger(parsedAge) ||
+        parsedAge < 16 ||
+        parsedAge > 100
+      ) {
+        errors[key] = "Age must be an integer between 16 and 100";
+      }
+    } else if (key === "pincode") {
+      if (
+        typeof value !== "string" ||
+        value.length !== 6 ||
+        value.startsWith("0") ||
+        !value.split("").every((digit) => digit >= "0" && digit <= "9")
+      ) {
+        errors[key] = "Invalid Indian pincode";
+      }
+    } else if (key === "state") {
+      let state = value?.trim() ?? "";
+
+      if (state.length === 0) {
+        errors[key] = "State is required";
+      }
+    } else if (key === "agreeTerms") {
+      if (Boolean(value) === false) {
+        errors[key] = "Must agree to terms";
+      }
+    }
+  }
+  let isValid = Object.keys(errors).length === 0;
+  return {
+    isValid,
+    errors,
+  };
 }
